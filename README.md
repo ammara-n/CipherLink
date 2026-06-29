@@ -1,5 +1,5 @@
 # CipherLink
-## Team Members: 
+### Team Members: 
 Ammara Nizardeen, Fatma Zoghbar
 ## Project Description
 
@@ -34,7 +34,7 @@ python app.py
 
 ---
 
-## Version 2 – CipherLink2
+### Version 2 – CipherLink2
 
 1. Download and extract the **CipherLink2** ZIP file.
 2. Open the extracted **CipherLink2** folder in Visual Studio Code.
