@@ -1,6 +1,6 @@
 # CipherLink
 ### Team Members: 
-Ammara Nizardeen, Fatma Zoghbar
+Ammara Nizardeen 8108328, Fatma Zoghbar 7718196
 ## Project Description
 
 CipherLink is a secure web-based communication platform developed to demonstrate the practical application of modern cryptographic techniques. The project focuses on protecting sensitive user data through encryption, secure file handling, and authenticated communication mechanisms.
