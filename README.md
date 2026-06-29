@@ -78,17 +78,3 @@ http://127.0.0.1:5000
 ```
 
 The SQLite database will be created automatically when the application starts.
-
-
-## Requirements
-
-* Python 3.x installed
-* Visual Studio Code (recommended)
-
-## Troubleshooting
-
-If you encounter a missing module error, install the required dependencies using:
-
-```bash
-pip install -r requirements.txt
-```
