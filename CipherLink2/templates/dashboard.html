@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard | CipherLink</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>CipherLink</h1>
+
+                <p class="subtitle">
+                    Secure and anonymous communication
+                </p>
+
+            </div>
+
+            <a
+                class="logout-button"
+                href="{{ url_for('logout') }}"
+            >
+                Log Out
+            </a>
+
+        </header>
+
+        {% with messages =
+            get_flashed_messages(with_categories=true)
+        %}
+
+            {% for category, message in messages %}
+
+                <div class="alert {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+        <section class="dashboard-card">
+
+            <p class="welcome">
+                Welcome, {{ username }}
+            </p>
+
+            <p class="small-text">
+                This is your private CipherLink identification number.
+                Share it only with people you want to communicate with.
+            </p>
+
+            <div class="id-box">
+
+                <span>Your CipherLink ID</span>
+
+                <strong>
+                    {{ cipherlink_id }}
+                </strong>
+
+            </div>
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2>Find a CipherLink User</h2>
+
+            <p class="small-text">
+                Exact ID searching and messaging requests will be
+                added in the next stage.
+            </p>
+
+            <form
+    class="search-row"
+    method="POST"
+    action="{{ url_for('search_user') }}"
+>
+    <input
+        type="text"
+        name="cipherlink_id"
+        placeholder="Enter an exact CipherLink ID"
+        required
+    >
+
+    <button type="submit">
+        Search
+    </button>
+</form>
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2>Messaging Requests</h2>
+
+            {% if incoming_requests %}
+
+                {% for request_item in incoming_requests %}
+
+                    <div class="request-card">
+
+                        <strong>
+                            {{ request_item["sender_cipherlink_id"] }}
+                        </strong>
+
+                        <p class="small-text">
+                            wants to start a secure chat.
+                        </p>
+
+                        <div class="request-actions">
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'accept_request',
+                                    request_id=request_item['id']
+                                ) }}"
+                            >
+                                <button type="submit">
+                                    Accept
+                                </button>
+                            </form>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'reject_request',
+                                    request_id=request_item['id']
+                                ) }}"
+                            >
+                                <button type="submit">
+                                    Reject
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    You currently have no messaging requests.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2>Secure Chats</h2>
+
+            {% if contacts %}
+
+                {% for contact in contacts %}
+
+                    <div class="contact-card">
+
+                        <strong>
+                            {{ contact["username"] }}
+                        </strong>
+
+                        <p class="small-text">
+                            {{ contact["cipherlink_id"] }}
+                        </p>
+
+                        <p class="small-text">
+                            Secure messaging connection established.
+                        </p>
+
+                        <a
+                            class="chat-button"
+                            href="{{ url_for('chat', contact_id=contact['id']) }}"
+                        >
+                            Open Chat
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    Your accepted CipherLink contacts will appear here.
+                </div>
+
+            {% endif %}
+
+        </section>
+    </div>
+
+</body>
+
+</html>

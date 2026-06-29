@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherLink Secure Chat</title>
+
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        background:#0f172a;
+        font-family:'Segoe UI',sans-serif;
+        color:white;
+        min-height:100vh;
+        padding:30px;
+    }
+
+    .container{
+        width:90%;
+        max-width:1100px;
+        margin:auto;
+    }
+
+    .header{
+        background:#1e293b;
+        padding:25px;
+        border-radius:16px;
+        text-align:center;
+        margin-bottom:25px;
+        box-shadow:0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .header h1{
+        margin-bottom:10px;
+    }
+
+    .subtitle{
+        color:#94a3b8;
+        margin-bottom:15px;
+    }
+
+    .security-bar{
+        display:flex;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+
+    .badge{
+        background:#334155;
+        padding:8px 15px;
+        border-radius:25px;
+        font-size:14px;
+    }
+
+    .form-card{
+        background:#1e293b;
+        padding:25px;
+        border-radius:16px;
+        margin-bottom:25px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    label{
+        display:block;
+        margin-bottom:8px;
+        margin-top:15px;
+        font-weight:600;
+    }
+
+    select,
+    textarea{
+        width:100%;
+        background:#0f172a;
+        color:white;
+        border:1px solid #475569;
+        border-radius:10px;
+        padding:12px;
+        font-size:14px;
+    }
+
+    textarea{
+        min-height:120px;
+        resize:vertical;
+    }
+
+    button{
+        width:100%;
+        margin-top:20px;
+        padding:14px;
+        border:none;
+        border-radius:10px;
+        background:#2563eb;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    button:hover{
+        background:#1d4ed8;
+    }
+
+    .history-title{
+        margin-bottom:20px;
+    }
+
+    .message-card{
+        background:#1e293b;
+        border-radius:16px;
+        padding:20px;
+        margin-bottom:20px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.25);
+        transition:0.3s;
+    }
+
+    .message-card:hover{
+        transform:translateY(-2px);
+    }
+
+    .sender{
+        font-size:18px;
+        margin-bottom:12px;
+    }
+
+    .message-text{
+        background:#2563eb;
+        padding:15px;
+        border-radius:12px;
+        margin-bottom:15px;
+        line-height:1.5;
+    }
+
+    .crypto-box{
+        background:#0f172a;
+        border:1px solid #334155;
+        padding:12px;
+        border-radius:10px;
+        margin-bottom:12px;
+        font-size:12px;
+        word-break:break-word;
+        overflow-wrap:break-word;
+        max-height:140px;
+        overflow-y:auto;
+    }
+
+    .verified{
+        color:#22c55e;
+        font-weight:bold;
+        margin-top:10px;
+    }
+
+    .failed{
+        color:#ef4444;
+        font-weight:bold;
+        margin-top:10px;
+    }
+
+    .empty{
+        text-align:center;
+        color:#94a3b8;
+        margin-top:20px;
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+<div class="header">
+    <h1>CipherLink Secure Chat</h1>
+
+    <p class="subtitle">
+        Secure Messaging using AES Encryption and RSA Digital Signatures
+    </p>
+
+    <div class="security-bar">
+        <div class="badge">AES Encryption</div>
+        <div class="badge">RSA Signatures</div>
+        <div class="badge">Authentication</div>
+        <div class="badge">Integrity</div>
+        <div class="badge">Non-Repudiation</div>
+    </div>
+</div>
+
+<div class="form-card">
+
+    <form method="POST">
+
+        <label for="sender">Sender</label>
+
+        <select name="sender" id="sender">
+            <option value="Fatima">Fatima</option>
+            <option value="Ammara">Ammara</option>
+        </select>
+
+        <label for="message">Message</label>
+
+        <textarea
+            id="message"
+            name="message"
+            placeholder="Type your secure message here..."
+            required
+        ></textarea>
+
+        <button type="submit">
+            Send Secure Message
+        </button>
+
+    </form>
+
+</div>
+
+<h2 class="history-title"> Chat History</h2>
+
+{% if messages %}
+
+    {% for msg in messages %}
+
+    <div class="message-card">
+
+        <div class="sender">
+            👤 {{ msg.sender }}
+        </div>
+
+        <div class="message-text">
+            {{ msg.message }}
+        </div>
+
+        <div class="crypto-box">
+            <strong>AES Encrypted Ciphertext</strong>
+            <hr style="margin:8px 0;border-color:#334155;">
+            {{ msg.encrypted }}
+        </div>
+
+        <div class="crypto-box">
+            <strong> RSA Digital Signature</strong>
+            <hr style="margin:8px 0;border-color:#334155;">
+            {{ msg.signature }}
+        </div>
+
+        {% if msg.verified %}
+            <div class="verified">
+                Signature Verified Successfully
+            </div>
+        {% else %}
+            <div class="failed">
+                Signature Verification Failed
+            </div>
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="empty">
+        No secure messages yet.
+    </div>
+
+{% endif %}
+
+
+</div>
+
+</body>
+</html>

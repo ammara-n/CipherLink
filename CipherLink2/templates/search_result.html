@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Search Result | CipherLink</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h1>CipherLink</h1>
+                <p class="subtitle">Exact ID search result</p>
+            </div>
+
+            <a
+                class="logout-button"
+                href="{{ url_for('dashboard') }}"
+            >
+                Back
+            </a>
+
+        </header>
+
+        <section class="dashboard-card">
+
+            <h2>User Found</h2>
+
+            <div class="id-box">
+                <strong>
+                    {{ found_user["cipherlink_id"] }}
+                </strong>
+            </div>
+
+            <form
+    method="POST"
+    action="{{ url_for(
+        'send_request',
+        receiver_id=found_user['id']
+    ) }}"
+>
+    <button type="submit">
+        Send Request
+    </button>
+</form>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

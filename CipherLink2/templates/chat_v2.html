@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Secure Chat | CipherLink</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h1>{{ contact["username"] }}</h1>
+
+                <p class="subtitle">
+                    {{ contact["cipherlink_id"] }}
+                </p>
+            </div>
+
+            <a
+                class="logout-button"
+                href="{{ url_for('dashboard') }}"
+            >
+                Back
+            </a>
+
+        </header>
+
+        <section class="dashboard-card">
+
+            <h2 class="section-title">
+                Messages Received
+            </h2>
+
+            {% set received = namespace(found=false) %}
+
+            {% for msg in messages %}
+
+                {% if msg["recipient_id"] == current_user_id %}
+
+                    {% set received.found = true %}
+
+                    <div class="encrypted-message-card received-message">
+
+                        <div class="message-meta">
+
+                            <strong>
+                                From {{ msg["sender_username"] }}
+                            </strong>
+
+                            <span>
+                                {{ msg["created_at"] }}
+                            </span>
+
+                        </div>
+
+                        <div class="message-label">
+                            Encrypted Message
+                        </div>
+
+                        <div class="ciphertext-box">
+                            {{ msg["ciphertext"].decode() }}
+                        </div>
+
+                        {% if decrypted_messages[msg["id"]] %}
+
+                            <div class="decrypted-box">
+
+                                <strong>
+                                    Decrypted Message
+                                </strong>
+
+                                <p>
+                                    {{ decrypted_messages[msg["id"]] }}
+                                </p>
+
+                            </div>
+
+                            {% if signature_results[msg["id"]] %}
+
+                                <div class="verified">
+                                    ✓ Signature verified successfully
+                                </div>
+
+                            {% else %}
+
+                                <div class="failed">
+                                    Signature verification failed
+                                </div>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <form
+                                class="decrypt-form"
+                                method="POST"
+                                action="{{ url_for(
+                                    'decrypt_message_route',
+                                    message_id=msg['id']
+                                ) }}"
+                            >
+
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Enter your account password"
+                                    required
+                                >
+
+                                <button type="submit">
+                                    Decrypt Message
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if not received.found %}
+
+                <div class="empty-state">
+                    No received messages yet.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <section class="dashboard-card">
+
+            <h2 class="section-title">
+                Messages Sent
+            </h2>
+
+            {% set sent = namespace(found=false) %}
+
+            {% for msg in messages %}
+
+                {% if msg["sender_id"] == current_user_id %}
+
+                    {% set sent.found = true %}
+
+                    <div class="encrypted-message-card sent-message">
+
+                        <div class="message-meta">
+
+                            <strong>
+                                Sent by You
+                            </strong>
+
+                            <span>
+                                {{ msg["created_at"] }}
+                            </span>
+
+                        </div>
+
+                        <div class="message-label">
+                            Encrypted Message Sent
+                        </div>
+
+                        <div class="ciphertext-box">
+                            {{ msg["ciphertext"].decode() }}
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if not sent.found %}
+
+                <div class="empty-state">
+                    No sent messages yet.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2 class="section-title">
+                Send a New Message
+            </h2>
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'send_message',
+                    recipient_id=contact['id']
+                ) }}"
+            >
+
+                <label for="message">
+                    Message
+                </label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Type your secure message..."
+                    required
+                ></textarea>
+
+                <label for="password">
+                    Account Password
+                </label>
+
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password to sign and send"
+                    required
+                >
+
+                <button type="submit">
+                    Send Encrypted Message
+                </button>
+
+            </form>
+
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2 class="section-title">
+                Secure File Transfers
+            </h2>
+
+            {% if file_transfers %}
+
+                {% for file_item in file_transfers %}
+
+                    <div class="file-transfer-card">
+
+                        <div class="message-meta">
+
+                            <strong>
+                                {% if file_item["sender_id"] == current_user_id %}
+                                    Sent by You
+                                {% else %}
+                                    Received from {{ file_item["sender_username"] }}
+                                {% endif %}
+                            </strong>
+
+                            <span>
+                                {{ file_item["created_at"] }}
+                            </span>
+
+                        </div>
+
+                        <div class="file-name">
+                            {{ file_item["original_filename"] }}
+                        </div>
+
+                        <div class="small-text">
+                            Encrypted file stored securely.
+                        </div>
+
+                        {% if file_item["recipient_id"] == current_user_id %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'decrypt_file_route',
+                                    file_id=file_item['id']
+                                ) }}"
+                            >
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Enter your account password"
+                                    required
+                                >
+
+                                <button type="submit">
+                                    Decrypt and Download
+                                </button>
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    No secure files have been exchanged yet.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <section class="dashboard-card">
+
+            <h2 class="section-title">
+                Send a Secure File
+            </h2>
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ url_for(
+                    'send_file',
+                    recipient_id=contact['id']
+                ) }}"
+            >
+
+                <label for="file">
+                    Choose File
+                </label>
+
+                <input
+                    id="file"
+                    name="file"
+                    type="file"
+                    required
+                >
+
+                <label for="file_password">
+                    Account Password
+                </label>
+
+                <input
+                    id="file_password"
+                    name="file_password"
+                    type="password"
+                    placeholder="Enter your password to sign and send"
+                    required
+                >
+
+                <button type="submit">
+                    Encrypt and Send File
+                </button>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>
